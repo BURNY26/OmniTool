@@ -30,11 +30,13 @@ import javafx.stage.Stage;
  * @author Bernard
  */
 public class OmniTool extends Application {
-
+    
+    // er zijn tekens met trema die problemen geven met het inlezen
     @Override
     public void start(Stage primaryStage) {
         ProvincesPanel p = new ProvincesPanel(false,false);
         try{
+            
         BufferedReader br = new BufferedReader (new FileReader("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\common\\landed_titles\\landed_titles.txt"));
         p.readHierarchy(br);
         } catch (IOException e){
