@@ -31,7 +31,7 @@ import javafx.stage.Stage;
  */
 public class OmniTool extends Application {
     
-    // er zijn tekens met trema die problemen geven met het inlezen
+    // er zijn tekens met trema die problemen geven met het inlezen nigig
     @Override
     public void start(Stage primaryStage) {
         ProvincesPanel p = new ProvincesPanel(false,false);
