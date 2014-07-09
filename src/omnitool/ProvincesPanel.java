@@ -8,9 +8,11 @@ package omnitool;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -100,7 +102,7 @@ public class ProvincesPanel extends GridPane {
     // haalt alle informatie uit definitions.csv en zet deze om naar ene bewerkbare string
     public String retrieveDefinitionsCSVContent(BufferedReader br) {
         try {
-            br = new BufferedReader(new FileReader(modPath + "\\map\\definition.csv"));
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(modPath + "\\map\\definition.csv"), "UTF-8"));
             StringBuilder sb = new StringBuilder();
             String lijn = br.readLine();
             while (lijn != null) {
@@ -131,8 +133,9 @@ public class ProvincesPanel extends GridPane {
                 int green = Integer.parseInt(values[2]);
                 int blue = Integer.parseInt(values[3]);
                 String nameProvince = values[4];
+                nameProvince = purgeString(nameProvince);
                 basicRGB.put(new Color(red, green, blue), nameProvince);
-                System.out.println(new Color(red, green, blue)+"\t"+ nameProvince);
+                System.out.println(new Color(red, green, blue) + "\t" + nameProvince);
                 if (isNumber(values[0])) {
                     provinceID.put(Integer.parseInt(values[0]), nameProvince);
                 }
@@ -155,11 +158,11 @@ public class ProvincesPanel extends GridPane {
             System.out.println(lastReadLine + " dit zou de kleur moeten zijn van " + countyName);
             Color kleur = extractColor(lastReadLine);
             c.setRGB(kleur);
-            
-            if(kleur == null){
+
+            if (kleur == null) {
                 System.err.println("Omg we are reading a null color");
             }
-            
+
             setLastReadLine(br.readLine());
             System.out.println(lastReadLine);
             while (startsWithE(lastReadLine) == false && startsWithK(lastReadLine) == false && startsWithD(lastReadLine) == false && startsWithC(lastReadLine) == false && titularDuchiesFound == false) {
@@ -373,6 +376,7 @@ public class ProvincesPanel extends GridPane {
 
     public String extractName(String lijn) {
         String sb = lijn;
+        sb = sb.toLowerCase();
         int a = sb.indexOf("_");
         int b = sb.indexOf("=");
         return sb.substring(a + 1, b).trim();
@@ -445,7 +449,7 @@ public class ProvincesPanel extends GridPane {
 
     //de methode geconstateerd om een waarde in te geven bij een hashmap en de sleutel terug te krijgen, nu nog omzetten naar een methoe die bruikbaar is met countylist
     //!!!!!readHierarchy moet al uitgevoerd zijn zodat countyList != null
-    public void giveCountyBasicRGB(HashMap<Color,String> basicRGB) {
+    public void giveCountyBasicRGB(HashMap<Color, String> basicRGB) {
         String name = "";
         System.out.println("give county basicRGB");
         for (County c : countyList) {
@@ -457,27 +461,116 @@ public class ProvincesPanel extends GridPane {
                     System.out.println(c.getBasicRGB());
                 }
             }
-            
-            if(c.getBasicRGB() == null){
+
+            if (c.getBasicRGB() == null) {
                 System.out.println("Warning: " + c.getName() + " does not have a basic rgb");
                 c.setBasicRGB(Color.red);
             }
         }
     }
-    
-    public void displayCountyBasicRGB(ArrayList<County>countyList){
-        for(County c : countyList){
+
+    public void displayCountyBasicRGB(ArrayList<County> countyList) {
+        for (County c : countyList) {
             System.out.println(c.getBasicRGB());
         }
     }
-    
-    public ArrayList<County> getCountyList(){
+
+    public ArrayList<County> getCountyList() {
         return countyList;
     }
-    
-    public HashMap<Color,String> getBasicRGB(){
+
+    public HashMap<Color, String> getBasicRGB() {
         return basicRGB;
     }
 
-}
+    public String purgeString(String a) {
+        a = a.toLowerCase();
+        if (a.contains("ä")) {
+            while (a.contains("ä")) {
+                a = a.replace('ä', 'a');
+            }
+        }
+        if (a.contains("à")) {
+            while (a.contains("à")) {
+                a = a.replace('à', 'a');
+            }
+        }
+        if (a.contains("å")) {
+            while (a.contains("å")) {
+                a = a.replace('å', 'a');
+            }
+        }
+        if (a.contains("á")) {
+            while (a.contains("á")) {
+                a = a.replace('á', 'a');
+            }
+        }
+        if (a.contains("Á")) {
+            while (a.contains("Á")) {
+                a = a.replace("Á", "a");
+            }
+        }
+        if (a.contains("ö")) {
+            while (a.contains("ö")) {
+                a = a.replace('ö', 'o');
+            }
+        }
+        if (a.contains("ó")) {
+            while (a.contains("ó")) {
+                a = a.replace('ó', 'o');
+            }
+        }
+        if (a.contains("ø")) {
+            while (a.contains("ø")) {
+                a = a.replace('ø', 'o');
+            }
+        }
+        if (a.contains("é")) {
+            while (a.contains("é")) {
+                a = a.replace("é", "e");
+            }
+        }
+        if (a.contains("É")) {
+            while (a.contains("É")) {
+                a = a.replace("É", "e");
+            }
+        }
+        if (a.contains("è")) {
+            while (a.contains("è")) {
+                a = a.replace("è", "e");
+            }
+        }
+        if (a.contains("ñ")) {
+            while (a.contains("ñ")) {
+                a = a.replace("ñ", "n");
+            }
+        }
+        if (a.contains("ü")) {
+            while (a.contains("ü")) {
+                a = a.replace("ü", "u");
+            }
+        }
+        if (a.contains("ç")) {
+            while (a.contains("ç")) {
+                a = a.replace("ç", "c");
+            }
+        }
+        if (a.contains(" ")) {
+            while (a.contains(" ")) {
+                a = a.replace(" ", "_");
+            }
+        }
+        if (a.contains(". ")) {
+            while (a.contains(". ")) {
+                a = a.replace(". ", "_");
+            }
+        }
+        if (a.contains("í")) {
+            while (a.contains("í")) {
+                a = a.replace("í", "i");
+            }
+        }
+        return a;
+    }
 
+}

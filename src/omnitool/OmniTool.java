@@ -10,9 +10,11 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -31,13 +33,18 @@ import javafx.stage.Stage;
  */
 public class OmniTool extends Application {
     
-    // er zijn tekens met trema die problemen geven met het inlezen nigig
+    // 1.er zijn tekens met trema die problemen geven met het inlezen 
+    // 2.oorspronkelijke csv en landed moeten nog geconverteerd worden naar utf-8 encoding
+    // 3.blijkbaar is er in localisation\text1.csv een stuk met de link tussen provincenumber en de naam getoond op
+    // de kaart
+    // 4. een deel van readHierarchy gaat slecht ,c_asturias de oviedo wordt niet ingelezen
+    // 5. labourd wordt voorgesteld door Dax
     @Override
     public void start(Stage primaryStage) {
         ProvincesPanel p = new ProvincesPanel(false,false);
         try{
             
-        BufferedReader br = new BufferedReader (new FileReader("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\common\\landed_titles\\landed_titles.txt"));
+        BufferedReader br = new BufferedReader (new InputStreamReader(new FileInputStream("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\common\\landed_titles\\landed_titles.txt"),"UTF-8"));
         p.readHierarchy(br);
         } catch (IOException e){
             System.out.println("landed_titles.txt niet gevonden in main()");
