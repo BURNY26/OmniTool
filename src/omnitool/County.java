@@ -88,5 +88,9 @@ public class County extends GeoUnit {
     public Color getBasicRGB(){
         return basicRGB;
     }
+    
+    public GeoUnit getSuper(){
+        return superstruct;
+    }
 
 }

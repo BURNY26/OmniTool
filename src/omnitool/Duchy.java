@@ -80,4 +80,8 @@ public class Duchy extends GeoUnit {
     public int getPositionLandedTitles() {
         return positionLandedTitles;
     }
+
+    public GeoUnit getSuper() {
+        return superstruct;
+    }
 }

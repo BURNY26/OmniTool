@@ -126,6 +126,7 @@ public class ProvincesPanel extends GridPane {
         String[] lines = definitionCSVContent.split("\n");
         String[] values;
         int i = 0;
+        boolean leon = false;
         for (String s : lines) {
             values = s.split(";");
             if (!s.isEmpty() && values.length == 6 && i != 0) {
@@ -134,6 +135,12 @@ public class ProvincesPanel extends GridPane {
                 int blue = Integer.parseInt(values[3]);
                 String nameProvince = values[4];
                 nameProvince = purgeString(nameProvince);
+                System.out.println(nameProvince);
+                if (nameProvince.equals("leon") && leon == false) {
+                    nameProvince = "french_leon";
+                    leon = true;
+                }
+                nameProvince = checkExceptionName(nameProvince);
                 basicRGB.put(new Color(red, green, blue), nameProvince);
                 System.out.println(new Color(red, green, blue) + "\t" + nameProvince);
                 if (isNumber(values[0])) {
@@ -144,39 +151,43 @@ public class ProvincesPanel extends GridPane {
         }
     }
 
+    //controleert of de meegegeven string van def.csv versch is met die van landed_titles
+    // jarnbaraland = c_dalarna
+
+    public String checkExceptionName(String lijn) {
+        if (lijn.equals("jarnbaraland")) {
+            return "dalarna";
+        }
+        if (lijn.equals("taroudant")){
+            return "ifni";
+        }
+        return lijn;
+    }
+
     public County readCounty(BufferedReader br, GeoUnit superstruct, String countyName) {
         County c = new County(teller, countyName, null, null, null, null, superstruct, 0);
         ArrayList<GeoUnit> substruct = new ArrayList<>();
         c.setSubstruct(substruct);
         try {
-            /*while (!lastReadLine.contains(countyName)) {
-             setLastReadLine(br.readLine());
-             }*/
             while (!lastReadLine.contains("color")) {
                 setLastReadLine(br.readLine());
+                System.out.println(lastReadLine + "\t\t rc looking for colour of " + c.getName());
             }
-            System.out.println(lastReadLine + " dit zou de kleur moeten zijn van " + countyName);
             Color kleur = extractColor(lastReadLine);
             c.setRGB(kleur);
-
-            if (kleur == null) {
-                System.err.println("Omg we are reading a null color");
-            }
-
             setLastReadLine(br.readLine());
-            System.out.println(lastReadLine);
+            System.out.println(lastReadLine + "\t\trc nothing is done with this one ");
             while (startsWithE(lastReadLine) == false && startsWithK(lastReadLine) == false && startsWithD(lastReadLine) == false && startsWithC(lastReadLine) == false && titularDuchiesFound == false) {
                 if (lastReadLine.contains("b_") && !lastReadLine.contains("#")) {
                     substruct.add(new Holding(extractName(lastReadLine), null, null));
-                    System.out.println(lastReadLine + " is toegevoegd aan " + countyName);
+                    System.out.println(lastReadLine + "\t\t will be added to " + c.getName());
                 }
                 setLastReadLine(br.readLine());
-                System.out.println("w2-rc");
+                System.out.println(lastReadLine + "\t\t rc w1 nothing is done with this one ");
                 if (lastReadLine.contains("# TITULAR DUCHIES")) {
                     titularDuchiesFound = true;
                 }
             }
-            System.out.println("lastReadLine rc =" + lastReadLine);
             countyList.add(c);
             c.setEndPositionLandedTitles(teller);
             return (c);
@@ -197,30 +208,33 @@ public class ProvincesPanel extends GridPane {
         try {
             while (!lastReadLine.contains(duchyName)) {
                 setLastReadLine(br.readLine());
+                System.out.println(lastReadLine);
+                System.out.println("\t\t looking for duchyName: " + duchyName);
             }
             while (!lastReadLine.contains("color")) {
                 setLastReadLine(br.readLine());
+                System.out.println(lastReadLine + "\t\tlooking for duchyColor of " + d.getName());
             }
             Color kleur = extractColor(lastReadLine);
             d.setRGB(kleur);
-            System.out.println(lastReadLine + "dit zou moeten de kleur zijn van duchy " + duchyName);
             setLastReadLine(br.readLine());
-
+            System.out.println(lastReadLine + "\t\t   rd nothing is done with the line above");
             while (!lastReadLine.contains("capital")) {
                 setLastReadLine(br.readLine());
-                System.out.println(lastReadLine);
+                System.out.println(lastReadLine + "\t\t looking for the capital of " + d.getName());
             }
             String capital = provinceID.get(extractCapital(lastReadLine));
             d.setCapital(capital);
             while (!startsWithC(lastReadLine)) {
                 setLastReadLine(br.readLine());
-                System.out.println(lastReadLine);
+                System.out.println(lastReadLine + " \t\tlooking for a c_ for duchy of : " + d.getName());
             }
-
+            System.out.println(lastReadLine + "\t\t found the c_ for duchy of : " + d.getName());
             while (!startsWithD(lastReadLine) && !startsWithK(lastReadLine) && !startsWithE(lastReadLine) && titularDuchiesFound == false) {
                 if (startsWithC(lastReadLine)) {
                     County c = readCounty(br, d, extractName(lastReadLine));
                     substruct.add(c);
+                    System.out.println(c.getName() + "\t\t is added to " + c.getSuper().getName());
                 }
             }
             d.setEndPositionLandedTitles(teller);
@@ -241,29 +255,32 @@ public class ProvincesPanel extends GridPane {
         try {
             while (!lastReadLine.contains("color")) {
                 setLastReadLine(br.readLine());
-                System.out.println(lastReadLine);
+                System.out.println(lastReadLine + "\t\t looking for color of " + k.getName());
             }
             Color kleur = extractColor(lastReadLine);
             k.setRGB(kleur);
-            setLastReadLine(br.readLine());
-            System.out.println(lastReadLine);
             while (!lastReadLine.contains("capital")) {
                 setLastReadLine(br.readLine());
-                System.out.println(lastReadLine);
+                System.out.println(lastReadLine + "\t\t looking for capital of k_ : " + k.getName());
             }
             String capital = provinceID.get(extractCapital(lastReadLine));
             k.setCapital(capital);
+            while (!startsWithD(lastReadLine)) {
+                setLastReadLine(br.readLine());
+                System.out.println(lastReadLine + " looking for duchies in k_" + k.getName());
+            }
             while (!startsWithK(lastReadLine) && !startsWithE(lastReadLine) && titularDuchiesFound == false) {
                 if (startsWithD(lastReadLine)) {
                     while (startsWithD(lastReadLine)) {
                         Duchy d = readDuchy(br, k, extractName(lastReadLine));
                         substruct.add(d);
+                        System.out.println("\t\t" + d.getName() + " is added to " + d.getSuper().getName());
                     }
                 }
-                if (!startsWithK(lastReadLine) && !startsWithE(lastReadLine) && titularDuchiesFound == false) {
+                if (!startsWithD(lastReadLine) && !startsWithK(lastReadLine) && !startsWithE(lastReadLine) && titularDuchiesFound == false) {
                     setLastReadLine(br.readLine());
+                    System.out.println(lastReadLine + "\t\t rk nothing is done with this line ");
                 }
-                System.out.println(lastReadLine + " w3-rk");
             }
             k.setPositionLandedTitles(teller);
             return k;
@@ -285,27 +302,26 @@ public class ProvincesPanel extends GridPane {
 
             while (!lastReadLine.contains("color")) {
                 setLastReadLine(br.readLine());
-                System.out.println(lastReadLine);
+                System.out.println(lastReadLine + "\t\t looking for the color to " + nameEmpire);
             }
             Color kleur = extractColor(lastReadLine);
-            System.out.println(kleur + "moet extractColor voorstellen");
             e.setRGB(kleur);
             while (!lastReadLine.contains("capital")) {
                 setLastReadLine(br.readLine());
-                System.out.println(lastReadLine);
+                System.out.println(lastReadLine + "\t\t looking for the capital to " + nameEmpire);
             }
             String capital = provinceID.get(extractCapital(lastReadLine));
             e.setCapital(capital);
             while (!lastReadLine.startsWith("e_") && titularDuchiesFound == false) {
                 if (lastReadLine.contains("k_")) {
                     while (startsWithK(lastReadLine)) {
+                        System.out.println(lastReadLine + "\t\t starts with a k_ and will be added to " + nameEmpire);
                         substruct.add(readKingdom(br, e, extractName(lastReadLine)));
                     }
-                    System.out.println("you are here ");
                 }
                 if ((lastReadLine.contains("e_roman_empire") || !startsWithE(lastReadLine)) && titularDuchiesFound == false) {
                     setLastReadLine(br.readLine());
-                    System.out.println(lastReadLine + " you are here 2");
+                    System.out.println(lastReadLine + "\t\t re nothing is done with this line");
                 }
             }
             e.setEndPositionLandedTitles(teller);
@@ -322,15 +338,12 @@ public class ProvincesPanel extends GridPane {
         try {
             while (!lastReadLine.contains("# EMPIRES")) {
                 setLastReadLine(br.readLine());
-                System.out.println(lastReadLine);
             }
             while (titularDuchiesFound == false) {
                 if (lastReadLine.startsWith("e_") && !lastReadLine.contains("e_roman_empire")) {
                     Empire e = readEmpire(br, extractName(lastReadLine));
                     empireList.add(e);
-                    System.out.println(e.toString());
                 }
-                System.out.println(lastReadLine + " niet in empireCreatie");
                 if (!lastReadLine.startsWith("e_")) {
                     setLastReadLine(br.readLine());
                 }
@@ -555,14 +568,14 @@ public class ProvincesPanel extends GridPane {
                 a = a.replace("ç", "c");
             }
         }
-        if (a.contains(" ")) {
-            while (a.contains(" ")) {
-                a = a.replace(" ", "_");
-            }
-        }
         if (a.contains(". ")) {
             while (a.contains(". ")) {
                 a = a.replace(". ", "_");
+            }
+        }
+        if (a.contains(" ")) {
+            while (a.contains(" ")) {
+                a = a.replace(" ", "_");
             }
         }
         if (a.contains("í")) {

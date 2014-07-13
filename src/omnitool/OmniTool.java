@@ -39,6 +39,8 @@ public class OmniTool extends Application {
     // de kaart
     // 4. een deel van readHierarchy gaat slecht ,c_asturias de oviedo wordt niet ingelezen
     // 5. labourd wordt voorgesteld door Dax
+    // 6. blijkbaar is definition.csv niet compleet ,opl : de naam uit de history/provinces koppelen aan de rgb in definition 
+    // en dan die naam vgl met de countyName en zo setBasicRGB uitvoeren
     @Override
     public void start(Stage primaryStage) {
         ProvincesPanel p = new ProvincesPanel(false,false);
