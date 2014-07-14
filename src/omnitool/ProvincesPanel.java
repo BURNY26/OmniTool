@@ -141,30 +141,30 @@ public class ProvincesPanel extends GridPane {
             }
             i++;
         }
-        for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
-            System.out.println("key = " + e.getKey() + "\t value= " + e.getValue().getName() + " " + e.getValue().getColor());
-        }
     }
 
     public void giveCountyBasicRGB() {
         String name = "";
         System.out.println("give county basicRGB");
-        for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
-            System.out.println("key = " + e.getKey() + "\t value= " + e.getValue().getName() + " " + e.getValue().getColor());
-        }
         for (County c : countyList) {
             name = c.getName();
+            String basicName = "";
             for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
-                if (name.equalsIgnoreCase(e.getValue().getName())) {
-                    System.out.println("color " + e.getValue().getColor() + " name " + e.getValue().getName());
+                basicName = e.getValue().getName();
+                if (name.equalsIgnoreCase(purgeString(basicName))) {
+                    System.out.println("color " + e.getValue().getColor() + " name " + basicName);
                     c.setBasicRGB(e.getValue().getColor());
                 }
+                if (name.equalsIgnoreCase("alcacer_do_sal")) {
+                    System.out.println(purgeString(basicName) + " " + name + " " + name.equals(purgeString(basicName)));
+                }
             }
-
+            checkExceptionName(c);
             if (c.getBasicRGB() == null) {
                 System.out.println("Warning: " + c.getName() + " does not have a basic rgb");
             }
         }
+
     }
 
     public void readHistoryProvinces() {
@@ -178,23 +178,77 @@ public class ProvincesPanel extends GridPane {
 
     // zal ....\\provinces\\1 - Vestisland.txt opsplitsen en id + naam in basicProvince steken
     public void filterIDandName(String lijn) {
+        System.out.println("filterID");
         int lastSlash = lijn.lastIndexOf('\\');
+        int lastStripe = lijn.indexOf("-");
         int lastPoint = lijn.lastIndexOf('.');
-        String a = lijn.substring(lastSlash + 1, lastPoint);
-        String[] id = a.split(" ");
-        basicProvince.put(Integer.parseInt(id[0]), new Couple(id[2].toLowerCase().trim()));
+        basicProvince.put(Integer.parseInt(lijn.substring(lastSlash + 1, lastStripe - 1).trim()), new Couple(lijn.substring(lastStripe + 2, lastPoint)));
     }
 
     //controleert of de meegegeven string van def.csv versch is met die van landed_titles
     // jarnbaraland = c_dalarna
-    public String checkExceptionName(String lijn) {
-        if (lijn.equals("jarnbaraland")) {
-            return "dalarna";
+    public void checkExceptionName(County c) {
+        if (c.getName().equals("dalarna")) {
+            for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
+                if (e.getValue().getName().equalsIgnoreCase("jarnbaraland")) {
+                    c.setBasicRGB(e.getValue().getColor());
+                }
+            }
+        } else if (c.getName().equals("ifni")) {
+            for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
+                if (e.getValue().getName().equalsIgnoreCase("taroudant")) {
+                    c.setBasicRGB(e.getValue().getColor());
+                }
+            }
+        } else if (c.getName().equals("znojmo")) {
+            for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
+                if (e.getValue().getName().equalsIgnoreCase("morava")) {
+                    c.setBasicRGB(e.getValue().getColor());
+                }
+            }
+        } else if (c.getName().equals("wurzburg")) {
+            for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
+                if (e.getValue().getName().equalsIgnoreCase("franken")) {
+                    c.setBasicRGB(e.getValue().getColor());
+                }
+            }
+        } else if (c.getName().equals("padova")) {
+            for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
+                if (e.getValue().getName().equalsIgnoreCase("padua")) {
+                    c.setBasicRGB(e.getValue().getColor());
+                }
+            }
+        } else if (c.getName().equals("padova")) {
+            for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
+                if (e.getValue().getName().equalsIgnoreCase("padua")) {
+                    c.setBasicRGB(e.getValue().getColor());
+                }
+            }
+        } else if (c.getName().equals("al_aqabah")) {
+            for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
+                if (e.getValue().getName().equalsIgnoreCase("al 'aqabah")) {
+                    c.setBasicRGB(e.getValue().getColor());
+                }
+            }
+        } else if (c.getName().equals("asayita")) {
+            for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
+                if (e.getValue().getName().equalsIgnoreCase("asaita")) {
+                    c.setBasicRGB(e.getValue().getColor());
+                }
+            }
+        } else if (c.getName().equals("french_leon")) {
+            for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
+                if (e.getValue().getName().equalsIgnoreCase("leon") && e.getKey() == 103) {
+                    c.setBasicRGB(e.getValue().getColor());
+                }
+            }
+        } else if (c.getName().equals("leon")) {
+            for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
+                if (e.getValue().getName().equalsIgnoreCase("leon") && e.getKey() == 190) {
+                    c.setBasicRGB(e.getValue().getColor());
+                }
+            }
         }
-        if (lijn.equals("taroudant")) {
-            return "ifni";
-        }
-        return lijn;
     }
 
     public County readCounty(BufferedReader br, GeoUnit superstruct, String countyName) {
@@ -584,6 +638,11 @@ public class ProvincesPanel extends GridPane {
         if (a.contains(". ")) {
             while (a.contains(". ")) {
                 a = a.replace(". ", "_");
+            }
+        }
+        if (a.contains("\'")) {
+            while (a.contains("\'")) {
+                a = a.replace("\'", "_");
             }
         }
         if (a.contains(" ")) {
