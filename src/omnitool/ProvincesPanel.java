@@ -69,6 +69,7 @@ public class ProvincesPanel extends GridPane {
             createCopyLandedTitles();
             //overridable method call is only dangerous in case of inheritance :http://stackoverflow.com/questions/3404301/whats-wrong-with-overridable-method-calls-in-constructors
         }
+        readHistoryProvinces();
         initBasicRGB(retrieveDefinitionsCSVContent(br));
         lblMap = new Label();
         cbLvl = new ComboBox();
@@ -128,39 +129,69 @@ public class ProvincesPanel extends GridPane {
         String[] lines = definitionCSVContent.split("\n");
         String[] values;
         int i = 0;
-        boolean leon = false;
         for (String s : lines) {
             values = s.split(";");
-            if (!s.isEmpty() && values.length == 6 && i != 0) {
+            if (!s.isEmpty() && values.length == 6 && i != 0 && !values[0].equals("")) {
                 int red = Integer.parseInt(values[1]);
                 int green = Integer.parseInt(values[2]);
                 int blue = Integer.parseInt(values[3]);
-                String nameProvince = values[4];
-                nameProvince = purgeString(nameProvince);
-                System.out.println(nameProvince);
-                if (nameProvince.equals("leon") && leon == false) {
-                    nameProvince = "french_leon";
-                    leon = true;
-                }
-                nameProvince = checkExceptionName(nameProvince);
-                basicRGB.put(new Color(red, green, blue), nameProvince);
-                System.out.println(new Color(red, green, blue) + "\t" + nameProvince);
-                if (isNumber(values[0])) {
-                    provinceID.put(Integer.parseInt(values[0]), nameProvince);
+                if (basicProvince.get(Integer.parseInt(values[0])) != null) {
+                    basicProvince.get(Integer.parseInt(values[0])).setColor(new Color(red, green, blue));
                 }
             }
             i++;
         }
+        for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
+            System.out.println("key = " + e.getKey() + "\t value= " + e.getValue().getName() + " " + e.getValue().getColor());
+        }
+    }
+
+    public void giveCountyBasicRGB() {
+        String name = "";
+        System.out.println("give county basicRGB");
+        for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
+            System.out.println("key = " + e.getKey() + "\t value= " + e.getValue().getName() + " " + e.getValue().getColor());
+        }
+        for (County c : countyList) {
+            name = c.getName();
+            for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
+                if (name.equalsIgnoreCase(e.getValue().getName())) {
+                    System.out.println("color " + e.getValue().getColor() + " name " + e.getValue().getName());
+                    c.setBasicRGB(e.getValue().getColor());
+                }
+            }
+
+            if (c.getBasicRGB() == null) {
+                System.out.println("Warning: " + c.getName() + " does not have a basic rgb");
+            }
+        }
+    }
+
+    public void readHistoryProvinces() {
+        File folder = new File("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\history\\provinces");
+        File[] fileList = folder.listFiles();
+        System.out.println("readHistoryProvinces");
+        for (File s : fileList) {
+            filterIDandName(s.getAbsolutePath());
+        }
+    }
+
+    // zal ....\\provinces\\1 - Vestisland.txt opsplitsen en id + naam in basicProvince steken
+    public void filterIDandName(String lijn) {
+        int lastSlash = lijn.lastIndexOf('\\');
+        int lastPoint = lijn.lastIndexOf('.');
+        String a = lijn.substring(lastSlash + 1, lastPoint);
+        String[] id = a.split(" ");
+        basicProvince.put(Integer.parseInt(id[0]), new Couple(id[2].toLowerCase().trim()));
     }
 
     //controleert of de meegegeven string van def.csv versch is met die van landed_titles
     // jarnbaraland = c_dalarna
-
     public String checkExceptionName(String lijn) {
         if (lijn.equals("jarnbaraland")) {
             return "dalarna";
         }
-        if (lijn.equals("taroudant")){
+        if (lijn.equals("taroudant")) {
             return "ifni";
         }
         return lijn;
@@ -464,43 +495,6 @@ public class ProvincesPanel extends GridPane {
 
     //de methode geconstateerd om een waarde in te geven bij een hashmap en de sleutel terug te krijgen, nu nog omzetten naar een methoe die bruikbaar is met countylist
     //!!!!!readHierarchy moet al uitgevoerd zijn zodat countyList != null
-    public void giveCountyBasicRGB(HashMap<Color, String> basicRGB) {
-        String name = "";
-        System.out.println("give county basicRGB");
-        for (County c : countyList) {
-            name = c.getName();
-            for (Entry<Color, String> e : basicRGB.entrySet()) {
-                if (name.equalsIgnoreCase(e.getValue())) {
-                    System.out.println("key = " + e.getKey() + "\t value " + e.getValue());
-                    c.setBasicRGB(e.getKey());
-                    System.out.println(c.getBasicRGB());
-                }
-            }
-
-            if (c.getBasicRGB() == null) {
-                System.out.println("Warning: " + c.getName() + " does not have a basic rgb");
-                c.setBasicRGB(Color.red);
-            }
-        }
-    }
-    
-    public void readHistoryProvinces(){
-        File folder = new File ("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\history\\provinces");
-        File [] fileList = folder.listFiles();
-        System.out.println("readHistoryProvinces");
-        for (File s : fileList){
-            filterIDandName(s.getAbsolutePath());
-        }
-    }
-    
-    // zal ....\\provinces\\1 - Vestisland.txt opsplitsen en id + naam in basicProvince steken
-    public void filterIDandName(String lijn){
-        int lastSlash = lijn.lastIndexOf('\\');
-        int lastPoint = lijn.lastIndexOf('.');
-        String a = lijn.substring(lastSlash+1,lastPoint);
-        String [] id = a.split(" ");
-        basicProvince.put(Integer.parseInt(id[0]), new Couple(id[2]));
-    }
     public void displayCountyBasicRGB(ArrayList<County> countyList) {
         for (County c : countyList) {
             System.out.println(c.getBasicRGB());
@@ -511,8 +505,8 @@ public class ProvincesPanel extends GridPane {
         return countyList;
     }
 
-    public HashMap<Color, String> getBasicRGB() {
-        return basicRGB;
+    public HashMap<Integer, Couple> getBasicProvince() {
+        return basicProvince;
     }
 
     public String purgeString(String a) {

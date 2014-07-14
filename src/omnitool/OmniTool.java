@@ -45,13 +45,12 @@ public class OmniTool extends Application {
     public void start(Stage primaryStage) {
         ProvincesPanel p = new ProvincesPanel(false,false);
         try{
-        p.readHistoryProvinces();
         BufferedReader br = new BufferedReader (new InputStreamReader(new FileInputStream("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\common\\landed_titles\\landed_titles.txt"),"UTF-8"));
         p.readHierarchy(br);
         } catch (IOException e){
             System.out.println("landed_titles.txt niet gevonden in main()");
         }
-        p.giveCountyBasicRGB(p.getBasicRGB());
+        p.giveCountyBasicRGB();
         Map m = new Map(new File("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\map\\provinces.bmp"));
         //m.displayLevelMap();
         m.setCountyMap(p.getCountyList());

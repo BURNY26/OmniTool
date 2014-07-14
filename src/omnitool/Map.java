@@ -47,12 +47,12 @@ public class Map {
     }
 
     public void readBasicMap(BufferedImage map) {
-        
+
         for (int i = 0; i < map.getWidth(); i++) {
             for (int j = 0; j < map.getHeight(); j++) {
                 int rawcolor = map.getRGB(i, j);
                 int red = (rawcolor >> 16) & 0x000000FF;
-                int green  = (rawcolor >> 8) & 0x000000FF;
+                int green = (rawcolor >> 8) & 0x000000FF;
                 int blue = (rawcolor) & 0x000000FF;
                 Color c = new Color(red, green, blue);
                 basicMap[i][j] = c;
@@ -108,7 +108,7 @@ public class Map {
 
     public Color getColorCounty(Color kleur, ArrayList<County> countyList) {
         for (County c : countyList) {
-            if (c.getBasicRGB().equals(kleur)) {
+            if (c.getBasicRGB()!=null && c.getBasicRGB().equals(kleur)) {
                 return c.getRGB();
             }
         }
