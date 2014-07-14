@@ -44,6 +44,7 @@ public class ProvincesPanel extends GridPane {
     private ArrayList<County> countyList;
     private HashMap<Color, String> basicRGB, gameRGB;
     private HashMap<Integer, String> provinceID;
+    private HashMap<Integer, Couple> basicProvince;
     private String lastReadLine;
     private int teller = 0;
     private boolean titularDuchiesFound;
@@ -62,6 +63,7 @@ public class ProvincesPanel extends GridPane {
         empireList = new ArrayList<>();
         basicRGB = new HashMap<>();
         provinceID = new HashMap<>();
+        basicProvince = new HashMap<>();
         if (vanilla == true) {
             createCopyProvBMPDefCSV();
             createCopyLandedTitles();
@@ -481,7 +483,24 @@ public class ProvincesPanel extends GridPane {
             }
         }
     }
-
+    
+    public void readHistoryProvinces(){
+        File folder = new File ("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\history\\provinces");
+        File [] fileList = folder.listFiles();
+        System.out.println("readHistoryProvinces");
+        for (File s : fileList){
+            filterIDandName(s.getAbsolutePath());
+        }
+    }
+    
+    // zal ....\\provinces\\1 - Vestisland.txt opsplitsen en id + naam in basicProvince steken
+    public void filterIDandName(String lijn){
+        int lastSlash = lijn.lastIndexOf('\\');
+        int lastPoint = lijn.lastIndexOf('.');
+        String a = lijn.substring(lastSlash+1,lastPoint);
+        String [] id = a.split(" ");
+        basicProvince.put(Integer.parseInt(id[0]), new Couple(id[2]));
+    }
     public void displayCountyBasicRGB(ArrayList<County> countyList) {
         for (County c : countyList) {
             System.out.println(c.getBasicRGB());
