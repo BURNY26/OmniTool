@@ -48,7 +48,7 @@ public class OmniTool extends Application {
     public void start(Stage primaryStage) throws FileNotFoundException, UnsupportedEncodingException {
         final ProvincesPanel p = new ProvincesPanel(false, false);
         final Map m = new Map(new File("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\map\\provinces.bmp"));
-        m.setCountyMap(p.getCountyList());
+        m.setCountyMap(p.getGrail());
         BufferedImage bi = m.convertColorArrayToBufIm(m.getLevelMap());
         Button btn = new Button();
         btn.setText("Say 'Hello World'");
@@ -68,19 +68,19 @@ public class OmniTool extends Application {
             @Override
             public void changed(ObservableValue<? extends String> ov, String t, String t1) {
                 if (t1.equals("county")) {
-                    m.setCountyMap(p.getCountyList());
+                    m.setCountyMap(p.getGrail());
                     BufferedImage bi = m.convertColorArrayToBufIm(m.getLevelMap());
                     scroll.setContent(new ImageView(m.convertBIToImage(bi)));
                 } else if (t1.equals("duchy")) {
-                    m.setDuchyMap(p.getCountyList());
+                    m.setDuchyMap(p.getGrail());
                     BufferedImage bi = m.convertColorArrayToBufIm(m.getLevelMap());
                     scroll.setContent(new ImageView(m.convertBIToImage(bi)));
                 } else if (t1.equals("kingdom")) {
-                    m.setKingdomMap(p.getCountyList());
+                    m.setKingdomMap(p.getGrail());
                     BufferedImage bi = m.convertColorArrayToBufIm(m.getLevelMap());
                     scroll.setContent(new ImageView(m.convertBIToImage(bi)));
                 } else if (t1.equals("empire")) {
-                    m.setEmpireMap(p.getCountyList());
+                    m.setEmpireMap(p.getGrail());
                     BufferedImage bi = m.convertColorArrayToBufIm(m.getLevelMap());
                     scroll.setContent(new ImageView(m.convertBIToImage(bi)));
                 }

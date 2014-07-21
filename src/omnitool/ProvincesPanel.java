@@ -46,6 +46,7 @@ public class ProvincesPanel extends GridPane {
     private HashMap<Color, String> basicRGB, gameRGB;
     private HashMap<Integer, String> provinceID;
     private HashMap<Integer, Couple> basicProvince;
+    private HashMap<Color,County> grail;
     private String lastReadLine;
     private int teller = 0;
     private boolean titularDuchiesFound;
@@ -65,6 +66,7 @@ public class ProvincesPanel extends GridPane {
         basicRGB = new HashMap<>();
         provinceID = new HashMap<>();
         basicProvince = new HashMap<>();
+        grail = new HashMap<>();
         if (vanilla == true) {
             createCopyProvBMPDefCSV();
             createCopyLandedTitles();
@@ -82,7 +84,7 @@ public class ProvincesPanel extends GridPane {
         for(County c :countyList){
             c.setbRGB(c.getSuper().getRGB());
             c.setbbRGB(((Duchy) c.getSuper()).getSuper().getRGB());
-            c.setbbbRGB(((Kingdom)((Duchy) c.getSuper()).getSuper()).getRGB());
+            c.setbbbRGB(((Kingdom)(((Duchy)c.getSuper()).getSuper())).getSuper().getRGB());
         }
     }
     
@@ -134,7 +136,6 @@ public class ProvincesPanel extends GridPane {
 
     //initialiseert basicRGB met de waarden gevonden uit definitionCSV
     public void initBasicRGB(String definitionCSVContent) {
-        System.out.println("initBasicRGB");
         String[] lines = definitionCSVContent.split("\n");
         String[] values;
         int i = 0;
@@ -154,18 +155,14 @@ public class ProvincesPanel extends GridPane {
 
     public void giveCountyBasicRGB() {
         String name = "";
-        System.out.println("give county basicRGB");
         for (County c : countyList) {
             name = c.getName();
             String basicName = "";
             for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
                 basicName = e.getValue().getName();
                 if (name.equalsIgnoreCase(purgeString(basicName))) {
-                    System.out.println("color " + e.getValue().getColor() + " name " + basicName);
                     c.setBasicRGB(e.getValue().getColor());
-                }
-                if (name.equalsIgnoreCase("alcacer_do_sal")) {
-                    System.out.println(purgeString(basicName) + " " + name + " " + name.equals(purgeString(basicName)));
+                    grail.put(e.getValue().getColor(), c);
                 }
             }
             checkExceptionName(c);
@@ -664,6 +661,10 @@ public class ProvincesPanel extends GridPane {
             }
         }
         return a;
+    }
+    
+    public HashMap<Color,County> getGrail(){
+        return grail;
     }
 
 }

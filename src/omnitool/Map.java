@@ -16,6 +16,7 @@ import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,15 +34,15 @@ public class Map {
     BufferedImage map;
     private Color[][] basicMap, levelMap;
     private boolean klaar;
-    int mapbreedte ;
+    int mapbreedte;
     int maplengte;
 
     public Map(File f) {
         try {
             klaar = false;
             map = ImageIO.read(f);
-            mapbreedte=map.getWidth();
-            maplengte=map.getHeight();
+            mapbreedte = map.getWidth();
+            maplengte = map.getHeight();
             basicMap = new Color[mapbreedte][maplengte];
             levelMap = new Color[mapbreedte][maplengte];
             readBasicMap(map);
@@ -51,7 +52,6 @@ public class Map {
     }
 
     public void readBasicMap(BufferedImage map) {
-
         for (int i = 0; i < mapbreedte; i++) {
             for (int j = 0; j < maplengte; j++) {
                 int rawcolor = map.getRGB(i, j);
@@ -90,92 +90,63 @@ public class Map {
         return wr;
     }
 
-    public Color[][] getBasicMap() {
-        return basicMap;
-    }
-
-    public Color[][] getLevelMap() {
-        return levelMap;
-    }
-
     //init levelMap op countyniveau
-    public void setCountyMap(ArrayList<County> countyList) {
+    public void setCountyMap(HashMap<Color, County> hm) {
         for (int i = 0; i < basicMap.length; i++) {
             for (int j = 0; j < basicMap[i].length; j++) {
                 Color c = basicMap[i][j];
-                levelMap[i][j] = getColorCounty(c, countyList);
+                if (hm.get(c) != null) {
+                    levelMap[i][j] = hm.get(c).getRGB();
+                }
+                else{
+                    levelMap[i][j] = Color.black;
+                }
             }
         }
     }
 
-    public void setDuchyMap(ArrayList<County> countyList) {
-        //for (int i = 0; i < map.getWidth(); i++) {
-        //for (int j = 0; j < map.getHeight(); j++) {
+    public void setDuchyMap(HashMap<Color, County> hm) {
         for (int i = 0; i < basicMap.length; i++) {
             for (int j = 0; j < basicMap[i].length; j++) {
                 Color c = basicMap[i][j];
-                levelMap[i][j] = getColorDuchy(c, countyList);
+                if (hm.get(c) != null) {
+                    levelMap[i][j] = hm.get(c).getbRGB();
+                }
+                else{
+                    levelMap[i][j] = Color.black;
+                }
             }
         }
     }
 
-    public void setKingdomMap(ArrayList<County> countyList) {
-        //for (int i = 0; i < map.getWidth(); i++) {
-        //for (int j = 0; j < map.getHeight(); j++) {
-        for (int i = 0; i < basicMap.length; i++) {
+    public void setKingdomMap(HashMap<Color, County> hm) {
+       for (int i = 0; i < basicMap.length; i++) {
             for (int j = 0; j < basicMap[i].length; j++) {
                 Color c = basicMap[i][j];
-                levelMap[i][j] = getColorKingdom(c, countyList);
+                if (hm.get(c) != null) {
+                    levelMap[i][j] = hm.get(c).getbbRGB();
+                }
+                else{
+                    levelMap[i][j] = Color.black;
+                }
             }
         }
     }
 
-        public void setEmpireMap(ArrayList<County> countyList) {
-        //for (int i = 0; i < map.getWidth(); i++) {
-        //for (int j = 0; j < map.getHeight(); j++) {
-        for (int i = 0; i < basicMap.length; i++) {
+    public void setEmpireMap(HashMap<Color, County> hm) {
+       for (int i = 0; i < basicMap.length; i++) {
             for (int j = 0; j < basicMap[i].length; j++) {
                 Color c = basicMap[i][j];
-                levelMap[i][j] = getColorEmpire(c, countyList);
+                if (hm.get(c) != null) {
+                    levelMap[i][j] = hm.get(c).getbbbRGB();
+                }
+                else{
+                    levelMap[i][j] = Color.black;
+                }
             }
         }
-    }
-    
-    public Color getColorCounty(Color kleur, ArrayList<County> countyList) {
-        for (County c : countyList) {
-            if (c.getBasicRGB() != null && c.getBasicRGB().equals(kleur)) {
-                return c.getRGB();
-            }
-        }
-        return (new Color(0, 0, 0));
     }
 
-    public Color getColorDuchy(Color kleur, ArrayList<County> countyList) {
-        for (County c : countyList) {
-            if (c.getBasicRGB() != null && c.getBasicRGB().equals(kleur)) {
-                return c.getbRGB();
-            }
-        }
-        return (new Color(0, 0, 0));
-    }
-
-    public Color getColorKingdom(Color kleur, ArrayList<County> countyList) {
-        for (County c : countyList) {
-            if (c.getBasicRGB() != null && c.getBasicRGB().equals(kleur)) {
-                return c.getbbRGB();
-            }
-        }
-        return (new Color(0, 0, 0));
-    }
-
-    public Color getColorEmpire(Color kleur, ArrayList<County> countyList) {
-        for (County c : countyList) {
-            if (c.getBasicRGB() != null && c.getBasicRGB().equals(kleur)) {
-                return c.getbbbRGB();
-            }
-        }
-        return (new Color(0, 0, 0));
-    }
 
     public void displayLevelMap() {
         for (int i = 0; i < mapbreedte; i++) {
@@ -184,5 +155,13 @@ public class Map {
             }
             System.out.println();
         }
+    }
+
+    public Color[][] getBasicMap() {
+        return basicMap;
+    }
+
+    public Color[][] getLevelMap() {
+        return levelMap;
     }
 }
