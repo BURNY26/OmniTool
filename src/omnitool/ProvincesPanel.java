@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,9 +54,9 @@ public class ProvincesPanel extends GridPane {
     private File landedtitlesFile = new File("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\common\\landed_titles\\landed_titles.txt");
     private String modPath = "C:\\Users\\Bernard\\Documents\\Paradox Interactive\\Crusader Kings II\\mod\\viking";
 
-    public ProvincesPanel(Boolean vanilla, Boolean kopie) {
+    public ProvincesPanel(Boolean vanilla, Boolean kopie) throws FileNotFoundException, UnsupportedEncodingException {
         lastReadLine = "";
-        BufferedReader br = null;
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\common\\landed_titles\\landed_titles.txt"), "UTF-8"));
         titularDuchiesFound = false;
         countyList = new ArrayList<>();
         duchyList = new ArrayList<>();
@@ -71,12 +72,20 @@ public class ProvincesPanel extends GridPane {
         }
         readHistoryProvinces();
         initBasicRGB(retrieveDefinitionsCSVContent(br));
-        lblMap = new Label();
-        cbLvl = new ComboBox();
-        cbLvl.getItems().addAll("County", "Duchy", "Kingdom", "Empire");
-        decoupled = new TextField();
+        readHierarchy(br);
+        giveCountyBasicRGB();
+        giveCountyBossRGB();
     }
 
+    // init de bRGB,bbRGB,bbbRGB met de waarden van de superstructuren
+    public void giveCountyBossRGB(){
+        for(County c :countyList){
+            c.setbRGB(c.getSuper().getRGB());
+            c.setbbRGB(((Duchy) c.getSuper()).getSuper().getRGB());
+            c.setbbbRGB(((Kingdom)((Duchy) c.getSuper()).getSuper()).getRGB());
+        }
+    }
+    
     public void createCopyLandedTitles() {
         File dir = new File(modPath + "\\common\\landed_titles");
         dir.mkdir();
@@ -178,7 +187,6 @@ public class ProvincesPanel extends GridPane {
 
     // zal ....\\provinces\\1 - Vestisland.txt opsplitsen en id + naam in basicProvince steken
     public void filterIDandName(String lijn) {
-        System.out.println("filterID");
         int lastSlash = lijn.lastIndexOf('\\');
         int lastStripe = lijn.indexOf("-");
         int lastPoint = lijn.lastIndexOf('.');
