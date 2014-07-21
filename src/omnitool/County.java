@@ -21,7 +21,7 @@ public class County extends GeoUnit {
     private GeoUnit superstruct;
     private ArrayList<GeoUnit> substruct;
     private String capital;
-    private Color basicRGB, bRGB, bbRGB, bbbRGB;
+    private Color basicRGB;
 
     public County(int positionLandedTitles, String name, Color RGB, Image COA, ArrayList<GeoUnit> substruct, String capital, GeoUnit superstruct, int endPosition) {
         super(name, RGB, COA);
@@ -66,9 +66,9 @@ public class County extends GeoUnit {
     public void setCOA(Image COA) {
         super.setCOA(COA);
     }
-
-    public void setBasicRGB(Color c) {
-        this.basicRGB = c;
+    
+    public void setBasicRGB(Color c){
+        this.basicRGB=c;
     }
 
     @Override
@@ -84,36 +84,13 @@ public class County extends GeoUnit {
     public int getPositionLandedTitles() {
         return positionLandedTitles;
     }
-
-    public Color getBasicRGB() {
+    
+    public Color getBasicRGB(){
         return basicRGB;
     }
-
-    public GeoUnit getSuper() {
+    
+    public GeoUnit getSuper(){
         return superstruct;
     }
 
-    public void setbRGB(Color c) {
-        bRGB = c;
-    }
-
-    public void setbbRGB(Color c) {
-        bbRGB = c;
-    }
-
-    public void setbbbRGB(Color c) {
-        bbbRGB = c;
-    }
-    
-    public Color getbRGB() {
-        return bRGB;
-    }
-
-    public Color getbbRGB() {
-        return bbRGB;
-    }
-
-    public Color getbbbRGB() {
-        return bbbRGB;
-    }
 }
