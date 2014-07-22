@@ -5,8 +5,14 @@
  */
 package omnitool;
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.PointerInfo;
+import java.awt.Robot;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,11 +33,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import static javafx.scene.paint.Color.color;
 import javafx.stage.Stage;
 
 /**
@@ -40,12 +49,18 @@ import javafx.stage.Stage;
  */
 public class OmniTool extends Application {
 
+    PointerInfo pointer;
+    Point point;
+    Robot robot;
+    Color color;
+
     // 1.oorspronkelijke csv en landed moeten nog geconverteerd worden naar utf-8 encoding
     // 2.blijkbaar is er in localisation\text1.csv een stuk met de link tussen provincenumber en de naam getoond op
     // de kaart
     // 3. lijst opstellen met conventies die opgevolgd moeten worden indien er gebruik wordt gemaakt van dit programma 
     @Override
-    public void start(Stage primaryStage) throws FileNotFoundException, UnsupportedEncodingException {
+    public void start(Stage primaryStage) throws FileNotFoundException, UnsupportedEncodingException, AWTException {
+
         final ProvincesPanel p = new ProvincesPanel(false, false);
         final Map m = new Map(new File("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\map\\provinces.bmp"));
         m.setCountyMap(p.getGrail());
@@ -58,9 +73,22 @@ public class OmniTool extends Application {
                 System.out.println("Hello World!");
             }
         });
-
+        
         final ScrollPane scroll = new ScrollPane();
         scroll.setContent(new ImageView(m.convertBIToImage(bi)));
+        robot=new Robot();
+        scroll.addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent t) {
+                pointer = MouseInfo.getPointerInfo();
+                point = pointer.getLocation();
+                color = robot.getPixelColor((int) point.getX(), (int) point.getY());
+                scroll.setTooltip(new Tooltip(" "+color));
+                System.out.println("Color at: " + point.getX() + "," + point.getY() + " is: " + color);
+            }
+
+        });
+
         ComboBox cb = new ComboBox();
         cb.getItems().addAll("county", "duchy", "kingdom", "empire");
         cb.valueProperty().addListener(new ChangeListener<String>() {
@@ -93,7 +121,6 @@ public class OmniTool extends Application {
         root.getChildren().add(scroll);
 
         root.getChildren().add(cb);
-        
 
         Scene scene = new Scene(root, 300, 250);
 

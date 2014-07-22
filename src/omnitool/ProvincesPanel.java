@@ -6,6 +6,9 @@
 package omnitool;
 
 import java.awt.Color;
+import java.awt.Point;
+import java.awt.PointerInfo;
+import java.awt.Robot;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,10 +49,11 @@ public class ProvincesPanel extends GridPane {
     private HashMap<Color, String> basicRGB, gameRGB;
     private HashMap<Integer, String> provinceID;
     private HashMap<Integer, Couple> basicProvince;
-    private HashMap<Color,County> grail;
+    private HashMap<Color, County> grail;
     private String lastReadLine;
     private int teller = 0;
     private boolean titularDuchiesFound;
+
 
     private String provincesbmpPath = "C:\\Users\\Bernard\\Documents\\Paradox Interactive\\Crusader Kings II\\mod\\viking\\map\\provinces.bmp";
     private File landedtitlesFile = new File("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\common\\landed_titles\\landed_titles.txt");
@@ -80,14 +84,14 @@ public class ProvincesPanel extends GridPane {
     }
 
     // init de bRGB,bbRGB,bbbRGB met de waarden van de superstructuren
-    public void giveCountyBossRGB(){
-        for(County c :countyList){
+    public void giveCountyBossRGB() {
+        for (County c : countyList) {
             c.setbRGB(c.getSuper().getRGB());
             c.setbbRGB(((Duchy) c.getSuper()).getSuper().getRGB());
-            c.setbbbRGB(((Kingdom)(((Duchy)c.getSuper()).getSuper())).getSuper().getRGB());
+            c.setbbbRGB(((Kingdom) (((Duchy) c.getSuper()).getSuper())).getSuper().getRGB());
         }
     }
-    
+
     public void createCopyLandedTitles() {
         File dir = new File(modPath + "\\common\\landed_titles");
         dir.mkdir();
@@ -197,60 +201,70 @@ public class ProvincesPanel extends GridPane {
             for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
                 if (e.getValue().getName().equalsIgnoreCase("jarnbaraland")) {
                     c.setBasicRGB(e.getValue().getColor());
+                    grail.put(e.getValue().getColor(), c);
                 }
             }
         } else if (c.getName().equals("ifni")) {
             for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
                 if (e.getValue().getName().equalsIgnoreCase("taroudant")) {
                     c.setBasicRGB(e.getValue().getColor());
+                    grail.put(e.getValue().getColor(), c);
                 }
             }
         } else if (c.getName().equals("znojmo")) {
             for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
                 if (e.getValue().getName().equalsIgnoreCase("morava")) {
                     c.setBasicRGB(e.getValue().getColor());
+                    grail.put(e.getValue().getColor(), c);
                 }
             }
         } else if (c.getName().equals("wurzburg")) {
             for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
                 if (e.getValue().getName().equalsIgnoreCase("franken")) {
                     c.setBasicRGB(e.getValue().getColor());
+                    grail.put(e.getValue().getColor(), c);
                 }
             }
         } else if (c.getName().equals("padova")) {
             for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
                 if (e.getValue().getName().equalsIgnoreCase("padua")) {
                     c.setBasicRGB(e.getValue().getColor());
+                    grail.put(e.getValue().getColor(), c);
                 }
             }
         } else if (c.getName().equals("padova")) {
             for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
                 if (e.getValue().getName().equalsIgnoreCase("padua")) {
                     c.setBasicRGB(e.getValue().getColor());
+                    grail.put(e.getValue().getColor(), c);
                 }
             }
         } else if (c.getName().equals("al_aqabah")) {
             for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
                 if (e.getValue().getName().equalsIgnoreCase("al 'aqabah")) {
                     c.setBasicRGB(e.getValue().getColor());
+                    grail.put(e.getValue().getColor(), c);
                 }
             }
         } else if (c.getName().equals("asayita")) {
             for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
                 if (e.getValue().getName().equalsIgnoreCase("asaita")) {
                     c.setBasicRGB(e.getValue().getColor());
+                    grail.put(e.getValue().getColor(), c);
                 }
             }
         } else if (c.getName().equals("french_leon")) {
             for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
                 if (e.getValue().getName().equalsIgnoreCase("leon") && e.getKey() == 103) {
                     c.setBasicRGB(e.getValue().getColor());
+                    grail.put(e.getValue().getColor(), c);
                 }
             }
         } else if (c.getName().equals("leon")) {
             for (Entry<Integer, Couple> e : basicProvince.entrySet()) {
                 if (e.getValue().getName().equalsIgnoreCase("leon") && e.getKey() == 190) {
                     c.setBasicRGB(e.getValue().getColor());
+                    grail.put(e.getValue().getColor(), c);
                 }
             }
         }
@@ -357,7 +371,7 @@ public class ProvincesPanel extends GridPane {
             }
             String capital = provinceID.get(extractCapital(lastReadLine));
             k.setCapital(capital);
-            while (!startsWithD(lastReadLine)) {
+            while (!startsWithD(lastReadLine) && !startsWithE(lastReadLine)) {
                 setLastReadLine(br.readLine());
                 System.out.println(lastReadLine + " looking for duchies in k_" + k.getName());
             }
@@ -662,8 +676,8 @@ public class ProvincesPanel extends GridPane {
         }
         return a;
     }
-    
-    public HashMap<Color,County> getGrail(){
+
+    public HashMap<Color, County> getGrail() {
         return grail;
     }
 
