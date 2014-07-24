@@ -31,6 +31,7 @@ public class County extends GeoUnit {
         this.capital = capital;
         this.superstruct = superstruct;
     }
+    
 
     public void setPositionLandedTitles(int pos) {
         positionLandedTitles = pos;

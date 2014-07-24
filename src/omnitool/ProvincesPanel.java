@@ -54,7 +54,6 @@ public class ProvincesPanel extends GridPane {
     private int teller = 0;
     private boolean titularDuchiesFound;
 
-
     private String provincesbmpPath = "C:\\Users\\Bernard\\Documents\\Paradox Interactive\\Crusader Kings II\\mod\\viking\\map\\provinces.bmp";
     private File landedtitlesFile = new File("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\common\\landed_titles\\landed_titles.txt");
     private String modPath = "C:\\Users\\Bernard\\Documents\\Paradox Interactive\\Crusader Kings II\\mod\\viking";
@@ -578,6 +577,18 @@ public class ProvincesPanel extends GridPane {
         return countyList;
     }
 
+    public ArrayList<Duchy> getDuchyList() {
+        return duchyList;
+    }
+
+    public ArrayList<Kingdom> getKingdomList() {
+        return kingdomList;
+    }
+
+    public ArrayList<Empire> getEmpireList() {
+        return empireList;
+    }
+
     public HashMap<Integer, Couple> getBasicProvince() {
         return basicProvince;
     }
@@ -675,6 +686,42 @@ public class ProvincesPanel extends GridPane {
             }
         }
         return a;
+    }
+
+    public County checkPresenceCountybyRGB(Color color) {
+        for (County c : getCountyList()) {
+            if (c.getRGB().equals(color)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public Duchy checkPresenceDuchybyRGB(Color color) {
+        for (Duchy d : getDuchyList()) {
+            if (d.getRGB().equals(color)) {
+                return d;
+            }
+        }
+        return null;
+    }
+
+    public Kingdom checkPresenceKingdombyRGB(Color color) {
+        for (Kingdom k : getKingdomList()) {
+            if (k.getRGB().equals(color)) {
+                return k;
+            }
+        }
+        return null;
+    }
+
+    public Empire checkPresenceEmpirebyRGB(Color color) {
+        for (Empire e : getEmpireList()) {
+            if (e.getRGB().equals(color)) {
+                return e;
+            }
+        }
+        return null;
     }
 
     public HashMap<Color, County> getGrail() {

@@ -66,31 +66,43 @@ public class OmniTool extends Application {
         m.setCountyMap(p.getGrail());
         BufferedImage bi = m.convertColorArrayToBufIm(m.getLevelMap());
         Button btn = new Button();
-        btn.setText("Say 'Hello World'");
+        btn.setText("OmniTool!");
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
+                System.out.println("OmniTool!");
             }
         });
-        
+
         final ScrollPane scroll = new ScrollPane();
-        scroll.setContent(new ImageView(m.convertBIToImage(bi)));
-        robot=new Robot();
+        ImageView iv = new ImageView(m.convertBIToImage(bi));
+        scroll.setContent(iv);
+        robot = new Robot();
+        pointer = MouseInfo.getPointerInfo();
+        point = pointer.getLocation();
+        color = robot.getPixelColor((int) point.getX(), (int) point.getY());
+        Tooltip tooltip = new Tooltip();
+        tooltip.setText(" " + color);
+        tooltip.activatedProperty();
+        scroll.setTooltip(tooltip);
         scroll.addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent t) {
                 pointer = MouseInfo.getPointerInfo();
                 point = pointer.getLocation();
                 color = robot.getPixelColor((int) point.getX(), (int) point.getY());
-                scroll.setTooltip(new Tooltip(" "+color));
+                Tooltip tooltip = new Tooltip();
+                tooltip.setText(" " + color);
+                tooltip.activatedProperty();
+                scroll.setTooltip(tooltip);
                 System.out.println("Color at: " + point.getX() + "," + point.getY() + " is: " + color);
             }
 
         });
 
-        ComboBox cb = new ComboBox();
+        final ComboBox cb = new ComboBox();
         cb.getItems().addAll("county", "duchy", "kingdom", "empire");
+        cb.setValue("county");
         cb.valueProperty().addListener(new ChangeListener<String>() {
 
             @Override
@@ -115,7 +127,38 @@ public class OmniTool extends Application {
             }
 
         });
-        cb.setValue("county");
+
+        scroll.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent t) {
+                pointer = MouseInfo.getPointerInfo();
+                point = pointer.getLocation();
+                color = robot.getPixelColor((int) point.getX(), (int) point.getY());
+                Stage st = new Stage();
+                if (cb.valueProperty().getValue().toString().equals("county") && !color.equals(Color.BLACK)) {
+                    County c = p.checkPresenceCountybyRGB(color);
+                    st.setTitle("County of "+c.getName());
+                    st.setScene(new CountyWindow(new StackPane(), 400, 200));
+                    st.show();
+                } else if (cb.valueProperty().getValue().toString().equals("duchy") && !color.equals(Color.BLACK)) {
+                    Duchy d = p.checkPresenceDuchybyRGB(color);
+                    st.setTitle("Duchy of "+d.getName());
+                    st.setScene(new CountyWindow(new StackPane(), 400, 200));
+                    st.show();
+                } else if (cb.valueProperty().getValue().toString().equals("kingdom") && !color.equals(Color.BLACK)) {
+                    Kingdom k =p.checkPresenceKingdombyRGB(color);
+                    st.setTitle("Kingdom of "+k.getName());
+                    st.setScene(new CountyWindow(new StackPane(), 400, 200));
+                    st.show();
+                } else if (cb.valueProperty().getValue().toString().equals("empire") && !color.equals(Color.BLACK)) {
+                    Empire e = p.checkPresenceEmpirebyRGB(color);
+                    st.setTitle("Empire of "+e.getName());
+                    st.setScene(new CountyWindow(new StackPane(), 400, 200));
+                    st.show();
+                }
+            }
+        });
 
         StackPane root = new StackPane();
         root.getChildren().add(scroll);
@@ -124,7 +167,7 @@ public class OmniTool extends Application {
 
         Scene scene = new Scene(root, 300, 250);
 
-        primaryStage.setTitle("Hello World!");
+        primaryStage.setTitle("OmniTool!");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
