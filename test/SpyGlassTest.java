@@ -4,9 +4,7 @@
  * and open the template in the editor.
  */
 
-import java.awt.Color;
-import java.util.HashMap;
-import omnitool.pp.ProvincesPanel;
+import music.SpyGlass;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -18,40 +16,35 @@ import org.junit.Test;
  *
  * @author Bernard
  */
-public class ProvincesPanel2 {
-    
-    public ProvincesPanel2() {
+public class SpyGlassTest {
+
+    public SpyGlassTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
 
-    @Test
-    public void testGiveCountyBasicRGB(){
-        HashMap<Color,String> map = new HashMap<>();
-        map.put(Color.red, "rood");
-        map.put(Color.black, "zwart");
-        map.put(Color.blue, "blauw");
-        map.put(Color.cyan, "cyaan");
-        ProvincesPanel p =new ProvincesPanel(false,false);
-        //assertEquals(Color.red, p.giveCountyBasicRGB(map,"rood"));
-    }
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
     //
     // @Test
     // public void hello() {}
+    @Test
+    public void SpyGlass() {
+        SpyGlass sg = new SpyGlass();
+        assertEquals("west_germanic", sg.extractName("west_germanic = { "));
+    }
 }

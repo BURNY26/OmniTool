@@ -3,45 +3,33 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package omnitool;
+package omnitool.pp;
 
 import java.awt.AWTException;
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
 import java.awt.Robot;
-import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import static javafx.scene.paint.Color.color;
 import javafx.stage.Stage;
+import javax.swing.ToolTipManager;
 
 /**
  *
@@ -77,13 +65,14 @@ public class OmniTool extends Application {
         final ScrollPane scroll = new ScrollPane();
         ImageView iv = new ImageView(m.convertBIToImage(bi));
         scroll.setContent(iv);
+        
         robot = new Robot();
         pointer = MouseInfo.getPointerInfo();
         point = pointer.getLocation();
         color = robot.getPixelColor((int) point.getX(), (int) point.getY());
-        Tooltip tooltip = new Tooltip();
+        ToolTipManager.sharedInstance().setInitialDelay(1);
+        final Tooltip tooltip = new Tooltip();
         tooltip.setText(" " + color);
-        tooltip.activatedProperty();
         scroll.setTooltip(tooltip);
         scroll.addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
             @Override
@@ -91,13 +80,9 @@ public class OmniTool extends Application {
                 pointer = MouseInfo.getPointerInfo();
                 point = pointer.getLocation();
                 color = robot.getPixelColor((int) point.getX(), (int) point.getY());
-                Tooltip tooltip = new Tooltip();
                 tooltip.setText(" " + color);
-                tooltip.activatedProperty();
-                scroll.setTooltip(tooltip);
                 System.out.println("Color at: " + point.getX() + "," + point.getY() + " is: " + color);
             }
-
         });
 
         final ComboBox cb = new ComboBox();

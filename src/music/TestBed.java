@@ -4,14 +4,20 @@
  * and open the template in the editor.
  */
 
-package omnitool;
-
-import javafx.scene.control.Tooltip;
+package music;
 
 /**
  *
  * @author Bernard
  */
-public class Tip extends Tooltip{
+public class TestBed {
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        SpyGlass sg = new SpyGlass();
+        sg.writeCGLijst();
+    }
     
 }

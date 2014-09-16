@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package omnitool;
+package omnitool.pp;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
