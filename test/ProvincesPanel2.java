@@ -6,7 +6,7 @@
 
 import java.awt.Color;
 import java.util.HashMap;
-import omnitool.pp.ProvincesPanel;
+import province.ProvincesPanel;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;

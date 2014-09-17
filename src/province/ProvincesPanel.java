@@ -3,12 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package omnitool.pp;
+package province;
 
+import java.awt.AWTException;
 import java.awt.Color;
+import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
 import java.awt.Robot;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,19 +26,43 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import javax.swing.ToolTipManager;
+import omnitool.pp.County;
+import omnitool.pp.CountyWindow;
+import omnitool.pp.Couple;
+import omnitool.pp.Duchy;
+import omnitool.pp.Empire;
+import omnitool.pp.GeoUnit;
+import omnitool.pp.Holding;
+import omnitool.pp.Kingdom;
+import omnitool.pp.Map;
 import org.apache.commons.io.FileUtils;
 
 /**
  *
  * @author Bernard
  */
-public class ProvincesPanel extends GridPane {
+public final class ProvincesPanel extends Stage {
+
+    PointerInfo pointer;
+    Point point;
+    Robot robot;
+    Color color;
 
     private Label lblMap;
     private ComboBox cbLvl;
@@ -54,13 +81,11 @@ public class ProvincesPanel extends GridPane {
     private int teller = 0;
     private boolean titularDuchiesFound;
 
-    private String provincesbmpPath = "C:\\Users\\Bernard\\Documents\\Paradox Interactive\\Crusader Kings II\\mod\\viking\\map\\provinces.bmp";
+    private String provincesbmpPath = "C:\\Users\\Bernard\\Documents\\Paradox Interactive\\Crusader Kings II\\mod\\Mongol\\map\\provinces.bmp";
     private File landedtitlesFile = new File("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\common\\landed_titles\\landed_titles.txt");
-    private String modPath = "C:\\Users\\Bernard\\Documents\\Paradox Interactive\\Crusader Kings II\\mod\\viking";
+    private String modPath = "C:\\Users\\Bernard\\Documents\\Paradox Interactive\\Crusader Kings II\\mod\\Mongol";
 
-    public ProvincesPanel(Boolean vanilla, Boolean kopie) throws FileNotFoundException, UnsupportedEncodingException {
-        lastReadLine = "";
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\common\\landed_titles\\landed_titles.txt"), "UTF-8"));
+    public ProvincesPanel(Boolean vanilla, Boolean kopie) {
         titularDuchiesFound = false;
         countyList = new ArrayList<>();
         duchyList = new ArrayList<>();
@@ -70,16 +95,132 @@ public class ProvincesPanel extends GridPane {
         provinceID = new HashMap<>();
         basicProvince = new HashMap<>();
         grail = new HashMap<>();
-        if (vanilla == true) {
-            createCopyProvBMPDefCSV();
-            createCopyLandedTitles();
-            //overridable method call is only dangerous in case of inheritance :http://stackoverflow.com/questions/3404301/whats-wrong-with-overridable-method-calls-in-constructors
+
+        final Map m = new Map(new File("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\map\\provinces.bmp"));
+        m.setCountyMap(getGrail());
+        BufferedImage bi = m.convertColorArrayToBufIm(m.getLevelMap());
+
+        final ScrollPane scroll = new ScrollPane();
+        ImageView iv = new ImageView(m.convertBIToImage(bi));
+        scroll.setContent(iv);
+
+        try {
+            robot = new Robot();
+        } catch (AWTException ex) {
+            Logger.getLogger(ProvincesPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-        readHistoryProvinces();
-        initBasicRGB(retrieveDefinitionsCSVContent(br));
-        readHierarchy(br);
-        giveCountyBasicRGB();
-        giveCountyBossRGB();
+        pointer = MouseInfo.getPointerInfo();
+        point = pointer.getLocation();
+        color = robot.getPixelColor((int) point.getX(), (int) point.getY());
+        ToolTipManager.sharedInstance().setInitialDelay(1);
+        final Tooltip tooltip = new Tooltip();
+        tooltip.setText(" " + color);
+        scroll.setTooltip(tooltip);
+        scroll.addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent t) {
+                pointer = MouseInfo.getPointerInfo();
+                point = pointer.getLocation();
+                color = robot.getPixelColor((int) point.getX(), (int) point.getY());
+                tooltip.setText(" " + color);
+                System.out.println("Color at: " + point.getX() + "," + point.getY() + " is: " + color);
+            }
+        });
+
+        final ComboBox cb = new ComboBox();
+        cb.getItems().addAll("county", "duchy", "kingdom", "empire");
+        cb.setValue("county");
+        cb.valueProperty().addListener(new ChangeListener<String>() {
+
+            @Override
+            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
+                switch (t1) {
+                    case "county": {
+                        m.setCountyMap(getGrail());
+                        BufferedImage bi = m.convertColorArrayToBufIm(m.getLevelMap());
+                        scroll.setContent(new ImageView(m.convertBIToImage(bi)));
+                        break;
+                    }
+                    case "duchy": {
+                        m.setDuchyMap(getGrail());
+                        BufferedImage bi = m.convertColorArrayToBufIm(m.getLevelMap());
+                        scroll.setContent(new ImageView(m.convertBIToImage(bi)));
+                        break;
+                    }
+                    case "kingdom": {
+                        m.setKingdomMap(getGrail());
+                        BufferedImage bi = m.convertColorArrayToBufIm(m.getLevelMap());
+                        scroll.setContent(new ImageView(m.convertBIToImage(bi)));
+                        break;
+                    }
+                    case "empire": {
+                        m.setEmpireMap(getGrail());
+                        BufferedImage bi = m.convertColorArrayToBufIm(m.getLevelMap());
+                        scroll.setContent(new ImageView(m.convertBIToImage(bi)));
+                        break;
+                    }
+                }
+            }
+        });
+
+        scroll.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent t) {
+                pointer = MouseInfo.getPointerInfo();
+                point = pointer.getLocation();
+                color = robot.getPixelColor((int) point.getX(), (int) point.getY());
+                Stage st = new Stage();
+                if (cb.valueProperty().getValue().toString().equals("county") && !color.equals(Color.BLACK)) {
+                    County c = checkPresenceCountybyRGB(color);
+                    st.setTitle("County of " + c.getName());
+                    st.setScene(new CountyWindow(new StackPane(), 400, 200));
+                    st.show();
+                } else if (cb.valueProperty().getValue().toString().equals("duchy") && !color.equals(Color.BLACK)) {
+                    Duchy d = checkPresenceDuchybyRGB(color);
+                    st.setTitle("Duchy of " + d.getName());
+                    st.setScene(new CountyWindow(new StackPane(), 400, 200));
+                    st.show();
+                } else if (cb.valueProperty().getValue().toString().equals("kingdom") && !color.equals(Color.BLACK)) {
+                    Kingdom k = checkPresenceKingdombyRGB(color);
+                    st.setTitle("Kingdom of " + k.getName());
+                    st.setScene(new CountyWindow(new StackPane(), 400, 200));
+                    st.show();
+                } else if (cb.valueProperty().getValue().toString().equals("empire") && !color.equals(Color.BLACK)) {
+                    Empire e = checkPresenceEmpirebyRGB(color);
+                    st.setTitle("Empire of " + e.getName());
+                    st.setScene(new CountyWindow(new StackPane(), 400, 200));
+                    st.show();
+                }
+            }
+        });
+
+        lastReadLine = "";
+        BufferedReader br;
+        try {
+            br = new BufferedReader(new InputStreamReader(new FileInputStream("C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Crusader Kings II\\common\\landed_titles\\landed_titles.txt"), "UTF-8"));
+            if (vanilla == true) {
+                createCopyProvBMPDefCSV();
+                createCopyLandedTitles();
+                //overridable method call is only dangerous in case of inheritance :http://stackoverflow.com/questions/3404301/whats-wrong-with-overridable-method-calls-in-constructors
+            }
+            readHistoryProvinces();
+            initBasicRGB(retrieveDefinitionsCSVContent(br));
+            readHierarchy(br);
+            giveCountyBasicRGB();
+            giveCountyBossRGB();
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(ProvincesPanel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ProvincesPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        StackPane sp = new StackPane();
+        sp.getChildren().add(scroll);
+
+        Scene sc = new Scene(sp, 600, 600);
+        setScene(sc);
+        sizeToScene();
     }
 
     // init de bRGB,bbRGB,bbbRGB met de waarden van de superstructuren
