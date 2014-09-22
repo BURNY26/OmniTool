@@ -1,0 +1,21 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Sep 10, 2014, 11:34:12 PM
+    Author     : Bernard
+*/
+.hurdy{
+    -fx-background-image: url("/resources/hurdy.png");
+}
+
+.pad{
+    -fx-border-color: rgb(200,200,200);
+    -fx-border-width: 2;
+    -fx-background-color: rgb(240,240,240);
+    -fx-font: 16px "Serif";
+    -fx-text-alignment: right;
+    
+}
