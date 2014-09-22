@@ -15,7 +15,7 @@ import javafx.stage.Stage;
  * @author Bernard
  */
 public class Warning extends Stage{
-    
+
     public Warning(String waarschuwing){
         setTitle("Error");
         Label lblTxt = new Label(waarschuwing);
@@ -23,7 +23,6 @@ public class Warning extends Stage{
         StackPane sp = new StackPane();
         sp.getChildren().add(lblTxt);
         Scene sc = new Scene (sp,lengthLabel,20);
-        
         setScene(sc);
         sizeToScene();
         this.show();
